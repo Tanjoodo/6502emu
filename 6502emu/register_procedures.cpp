@@ -17,7 +17,7 @@ bool _getBit(int bit_num)
 	return temp_s & 1;
 }
 
-extern void SetFlagC(bool state)
+void SetFlagC(bool state)
 {
 	_setBit(state, 0);
 }
