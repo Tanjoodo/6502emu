@@ -1,15 +1,7 @@
 #pragma once
 //#include "global_registers.h"
 #include <cstdint>
-namespace reg
-{
-	static uint8_t Accumulator,
-		X,
-		Y,
-		Status,
-		PC,
-		SP;
-}
+
 void SetFlagC(bool);
 void SetFlagZ(bool);
 void SetFlagI(bool);
