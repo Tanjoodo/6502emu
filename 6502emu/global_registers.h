@@ -5,6 +5,7 @@ namespace reg
 		X,
 		Y,
 		Status,
-		PC,
+		PCH,
+		PCL,
 		SP;
 }
