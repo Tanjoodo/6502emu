@@ -145,6 +145,7 @@
     <ClInclude Include="decoder.h" />
     <ClInclude Include="global_registers.h" />
     <ClInclude Include="instruction_procedures.h" />
+    <ClInclude Include="memory.h" />
     <ClInclude Include="register_procedures.h" />
   </ItemGroup>
   <ItemGroup>
