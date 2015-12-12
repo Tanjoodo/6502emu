@@ -5,6 +5,9 @@
 
 #include "instruction_procedures.h"
 #include "decoder.h"
+#include "memory.h"
+#include "global_registers.h"
+#include "register_procedures.h"
 
 using namespace std;
 
@@ -79,16 +82,74 @@ void PrintOperands(AddressingMode addressingMode, uint8_t operands[])
 	cout << endl;
 
 }
+
+uint16_t _8_to_16(uint8_t high, uint8_t low)
+{
+	return (uint16_t)high << 8 | low;
+}
+
+uint16_t _calculate_address(AddressingMode addressingMode, uint8_t operands[])
+{
+	switch (addressingMode)
+	{
+	case Absolute:
+		return _8_to_16(operands[1], operands[0]);
+	case ZeroPage:
+		return operands[0];
+	case Relative:
+		return _8_to_16(reg::PCH, reg::PCL) + (int8_t)operands[0];
+	case AbsoluteX:
+		return reg::X + (int16_t)_8_to_16(operands[1], operands[0]);
+	case AbsoluteY:
+		return reg::Y + (int16_t)_8_to_16(operands[1], operands[0]);
+	case ZeroPageX:
+		return (uint16_t)((reg::X + operands[0]) % 0xFF);
+	case ZeroPageY:
+		return (uint16_t)((reg::Y + operands[0]) % 0xFF);
+	case ZeroPageIndirectX:
+		return _8_to_16(mem[reg::X + operands[0] + 1], mem[reg::X + operands[0]]);
+	case ZeroPageIndirectY:
+		return _8_to_16(mem[reg::Y + operands[0] + 1], mem[reg::Y + operands[0]]);
+	}
+}
+
+// Should not be used with addressing modes Accumulator and Implied.
+uint8_t _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
+{
+	uint8_t operand;
+	switch (addressingMode)
+	{
+	case Immediate:
+		return operands[0];
+	default:
+		return mem[_calculate_address(addressingMode, operands)];
+	}
+}
+
 void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "ADC ";
-	PrintOperands(addressingMode, operands);
+	uint8_t operand = _fetch_operand(addressingMode, operands);
+	if (!GetFlagD())
+	{
+		bool bit7 = reg::Accumulator & (1 << 7);
+		uint8_t oldAcc = reg::Accumulator;
+		if (reg::Accumulator + operand > 255)
+			SetFlagC(true);
+		else
+			SetFlagC(false);
+
+		reg::Accumulator += operand;
+
+		SetFlagS(reg::Accumulator & (1 << 7)); // Put bit 7 in S flag
+		SetFlagZ(!reg::Accumulator);
+		//TODO: Implement overflow flag setting
+	}
 }
 
 void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 {
 	cout << "AND ";
-	PrintOperands(addressingMode, operands); 
+	PrintOperands(addressingMode, operands);
 }
 
 void ProcASL(AddressingMode addressingMode, uint8_t operands[])

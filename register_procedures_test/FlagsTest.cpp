@@ -10,7 +10,7 @@ namespace register_procedures_test
 	{
 	public:
 
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(TestFlags)
 		{
 			using namespace reg;
 			Status = 0;
