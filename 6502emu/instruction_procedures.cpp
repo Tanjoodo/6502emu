@@ -148,8 +148,10 @@ void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "AND ";
-	PrintOperands(addressingMode, operands);
+	uint8_t operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::Accumulator & operand;
+	SetFlagZ(reg::Accumulator);
+	SetFlagS(reg::Accumulator & (1 << 7));
 }
 
 void ProcASL(AddressingMode addressingMode, uint8_t operands[])
