@@ -342,8 +342,6 @@ void ProcLSR(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcNOP(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "NOP ";
-	PrintOperands(addressingMode, operands);
 }
 
 void ProcORA(AddressingMode addressingMode, uint8_t operands[])
