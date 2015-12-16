@@ -114,9 +114,8 @@ uint16_t _calculate_address(AddressingMode addressingMode, uint8_t operands[])
 }
 
 // Should not be used with addressing modes Accumulator and Implied.
-uint8_t _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
+uint8_t& _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t operand;
 	switch (addressingMode)
 	{
 	case Immediate:
@@ -128,7 +127,7 @@ uint8_t _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t operand = _fetch_operand(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagD())
 	{
 		bool bit7 = reg::Accumulator & (1 << 7);
@@ -156,8 +155,14 @@ void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcASL(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "ASL ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = (addressingMode == Accumulator) ? reg::Accumulator : _fetch_operand(addressingMode, operands);
+
+	SetFlagC((operand & (1 << 7)) != 0);
+	SetFlagS((operand & (1 << 6)) != 0);
+
+	operand <<= 1;
+
+	SetFlagZ(operand == 0);
 }
 
 void ProcBCC(AddressingMode addressingMode, uint8_t operands[])
