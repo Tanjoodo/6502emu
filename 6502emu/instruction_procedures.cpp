@@ -227,26 +227,22 @@ void ProcBVS(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcCLC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CLC ";
-	PrintOperands(addressingMode, operands);
+	SetFlagC(false);
 }
 
 void ProcCLD(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CLD ";
-	PrintOperands(addressingMode, operands);
+	SetFlagD(false);
 }
 
 void ProcCLI(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CLI ";
-	PrintOperands(addressingMode, operands);
+	SetFlagI(false);
 }
 
 void ProcCLV(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CLV ";
-	PrintOperands(addressingMode, operands);
+	SetFlagV(false);
 }
 
 void ProcCMP(AddressingMode addressingMode, uint8_t operands[])
@@ -411,14 +407,12 @@ void ProcSBC(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcSEC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "SEC ";
-	PrintOperands(addressingMode, operands);
+	SetFlagC(true);
 }
 
 void ProcSED(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "SED ";
-	PrintOperands(addressingMode, operands);
+	SetFlagD(true);
 }
 
 void ProcSEI(AddressingMode addressingMode, uint8_t operands[])
