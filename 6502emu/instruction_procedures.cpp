@@ -247,8 +247,10 @@ void ProcCLV(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcCMP(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CMP ";
-	PrintOperands(addressingMode, operands);
+	uint8_t &operand = _fetch_operand(addressingMode, operands);
+	SetFlagZ(operand == reg::Accumulator);
+	SetFlagS(reg::Accumulator < operand);
+	SetFlagC(reg::Accumulator >= operand);
 }
 
 void ProcCPX(AddressingMode addressingMode, uint8_t operands[])
