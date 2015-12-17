@@ -110,6 +110,8 @@ uint16_t _calculate_address(AddressingMode addressingMode, uint8_t operands[])
 		return _8_to_16(mem[reg::X + operands[0] + 1], mem[reg::X + operands[0]]);
 	case ZeroPageIndirectY:
 		return _8_to_16(mem[reg::Y + operands[0] + 1], mem[reg::Y + operands[0]]);
+	default:
+		return 0;
 	}
 }
 
@@ -130,7 +132,7 @@ void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 	uint8_t& operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagD())
 	{
-		bool bit7 = reg::Accumulator & (1 << 7);
+		bool bit7 = (reg::Accumulator & (1 << 7)) != 0;
 		uint8_t oldAcc = reg::Accumulator;
 		if (reg::Accumulator + operand > 255)
 			SetFlagC(true);
@@ -139,7 +141,7 @@ void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 
 		reg::Accumulator += operand;
 
-		SetFlagS(reg::Accumulator & (1 << 7)); // Put bit 7 in S flag
+		SetFlagS((reg::Accumulator & (1 << 7)) != 0); // Put bit 7 in S flag
 		SetFlagZ(!reg::Accumulator);
 		//TODO: Implement overflow flag setting
 	}
@@ -149,8 +151,8 @@ void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint8_t operand = _fetch_operand(addressingMode, operands);
 	reg::Accumulator = reg::Accumulator & operand;
-	SetFlagZ(reg::Accumulator);
-	SetFlagS(reg::Accumulator & (1 << 7));
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagS((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcASL(AddressingMode addressingMode, uint8_t operands[])
