@@ -141,7 +141,7 @@ void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 
 		reg::Accumulator += operand;
 
-		SetFlagS((reg::Accumulator & (1 << 7)) != 0); // Put bit 7 in S flag
+		SetFlagN((reg::Accumulator & (1 << 7)) != 0); // Put bit 7 in S flag
 		SetFlagZ(!reg::Accumulator);
 		//TODO: Implement overflow flag setting
 	}
@@ -152,7 +152,7 @@ void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 	uint8_t& operand = _fetch_operand(addressingMode, operands);
 	reg::Accumulator = reg::Accumulator & operand;
 	SetFlagZ(reg::Accumulator == 0);
-	SetFlagS((reg::Accumulator & (1 << 7)) != 0);
+	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcASL(AddressingMode addressingMode, uint8_t operands[])
@@ -160,7 +160,7 @@ void ProcASL(AddressingMode addressingMode, uint8_t operands[])
 	uint8_t& operand = (addressingMode == Accumulator) ? reg::Accumulator : _fetch_operand(addressingMode, operands);
 
 	SetFlagC((operand & (1 << 7)) != 0);
-	SetFlagS((operand & (1 << 6)) != 0);
+	SetFlagN((operand & (1 << 6)) != 0);
 
 	operand <<= 1;
 
@@ -251,7 +251,7 @@ void ProcCMP(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint8_t &operand = _fetch_operand(addressingMode, operands);
 	SetFlagZ(operand == reg::Accumulator);
-	SetFlagS(reg::Accumulator < operand);
+	SetFlagN(reg::Accumulator < operand);
 	SetFlagC(reg::Accumulator >= operand);
 }
 
@@ -326,19 +326,23 @@ void ProcLDA(AddressingMode addressingMode, uint8_t operands[])
 	uint8_t& operand = _fetch_operand(addressingMode, operands);
 	reg::Accumulator = operand;
 	SetFlagZ(reg::Accumulator == 0);
-	SetFlagS(reg::Accumulator & (1 << 7) != 0);
+	SetFlagN(reg::Accumulator & (1 << 7) != 0);
 }
 
 void ProcLDX(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "LDX ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::X = operand;
+	SetFlagZ(reg::X == 0);
+	SetFlagN(reg::X & (1 << 7) != 0);
 }
 
 void ProcLDY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "LDY ";
-	PrintOperands(addressingMode, operands);
+    uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Y= operand;
+	SetFlagN(reg::Y & (1 << 7) != 0);
+	SetFlagZ(reg::Y == 0);
 }
 
 void ProcLSR(AddressingMode addressingMode, uint8_t operands[])
@@ -353,8 +357,11 @@ void ProcNOP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcORA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "ORA ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::Accumulator | operand;
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagN(reg::Accumulator & (1 << 7) != 0);
+
 }
 
 void ProcPHA(AddressingMode addressingMode, uint8_t operands[])
