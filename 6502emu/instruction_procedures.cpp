@@ -333,16 +333,21 @@ void ProcLDX(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint8_t& operand = _fetch_operand(addressingMode, operands);
 	reg::X = operand;
-	SetFlagZ(reg::Accumulator == 0);
-	SetFlagN(reg::Accumulator & (1 << 7) != 0);
+	SetFlagZ(reg::X == 0);
+	SetFlagN(reg::X & (1 << 7) != 0);
 }
 
 void ProcLDY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "LDY ";
-	PrintOperands(addressingMode, operands);
-}
+    uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Y= operand;
+	SetFlagN(reg::Y & (1 << 7) != 0);
+	SetFlagZ(reg::Y == 0);
 
+
+
+}
+  
 void ProcLSR(AddressingMode addressingMode, uint8_t operands[])
 {
 	cout << "LSR ";
