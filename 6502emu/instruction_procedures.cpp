@@ -149,7 +149,7 @@ void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t operand = _fetch_operand(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
 	reg::Accumulator = reg::Accumulator & operand;
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagS((reg::Accumulator & (1 << 7)) != 0);
@@ -323,8 +323,10 @@ void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcLDA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "LDA ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = operand;
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagS(reg::Accumulator & (1 << 7) != 0);
 }
 
 void ProcLDX(AddressingMode addressingMode, uint8_t operands[])
