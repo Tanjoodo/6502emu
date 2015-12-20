@@ -47,7 +47,7 @@ void SetFlagV(bool state)
 	_setBit(state, 6);
 }
 
-void SetFlagS(bool state)
+void SetFlagN(bool state)
 {
 	_setBit(state, 7);
 }
@@ -82,7 +82,7 @@ bool GetFlagV()
 	return _getBit(6);
 }
 
-bool GetFlagS()
+bool GetFlagN()
 {
 	return _getBit(7);
 }
