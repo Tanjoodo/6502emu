@@ -44,10 +44,10 @@ namespace register_procedures_test
 			SetFlagV(false);
 			Assert::AreEqual(GetFlagV(), false);
 
-			SetFlagS(true);
-			Assert::AreEqual(GetFlagS(), true);
-			SetFlagS(false);
-			Assert::AreEqual(GetFlagS(), false);
+			SetFlagN(true);
+			Assert::AreEqual(GetFlagN(), true);
+			SetFlagN(false);
+			Assert::AreEqual(GetFlagN(), false);
 		}
 
 	};
