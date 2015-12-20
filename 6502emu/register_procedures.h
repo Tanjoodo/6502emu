@@ -16,4 +16,4 @@ bool GetFlagI();
 bool GetFlagD();
 bool GetFlagB();
 bool GetFlagV();
-bool GetFlagS();
+bool GetFlagN();
