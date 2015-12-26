@@ -454,8 +454,10 @@ void ProcSTY(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcTAX(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "TAX ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::X = reg::Accumulator & operand;
+	SetFlagZ(reg::X == 0);
+	SetFlagN((reg::X & (1 << 7)) != 0);
 }
 
 void ProcTAY(AddressingMode addressingMode, uint8_t operands[])
