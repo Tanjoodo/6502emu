@@ -454,14 +454,18 @@ void ProcSTY(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcTAX(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "TAX ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::X = reg::Accumulator & operand;
+	SetFlagZ(reg::X == 0);
+	SetFlagN((reg::X & (1 << 7)) != 0);
 }
 
 void ProcTAY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "TAY ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Y = reg::Accumulator & operand;
+	SetFlagZ(reg::Y == 0);
+	SetFlagN((reg::Y & (1 << 7)) != 0);
 }
 
 void ProcTSX(AddressingMode addressingMode, uint8_t operands[])
@@ -472,8 +476,10 @@ void ProcTSX(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcTXA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "TXA ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::X & operand;
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcTXS(AddressingMode addressingMode, uint8_t operands[])
@@ -484,6 +490,9 @@ void ProcTXS(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcTYA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "TYA ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::Y & operand;
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
+
 }
