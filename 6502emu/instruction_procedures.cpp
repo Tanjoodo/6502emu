@@ -436,20 +436,20 @@ void ProcSEI(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcSTA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "STA ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	operand = reg::Accumulator;
 }
 
 void ProcSTX(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "STX ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	operand = reg::X;
 }
 
 void ProcSTY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "STY ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	operand = reg::Y;
 }
 
 void ProcTAX(AddressingMode addressingMode, uint8_t operands[])
