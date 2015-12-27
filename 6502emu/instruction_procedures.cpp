@@ -430,8 +430,7 @@ void ProcSED(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcSEI(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "SEI ";
-	PrintOperands(addressingMode, operands);
+	SetFlagI(true);
 }
 
 void ProcSTA(AddressingMode addressingMode, uint8_t operands[])
