@@ -497,8 +497,7 @@ void ProcTXS(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcTYA(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::Accumulator = reg::Y & operand;
+	reg::Accumulator = reg::Y;
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 
