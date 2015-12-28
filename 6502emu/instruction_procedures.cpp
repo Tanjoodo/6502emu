@@ -328,8 +328,11 @@ void ProcJMP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "JSR ";
-	PrintOperands(addressingMode, operands);
+	IncrementPC();
+	IncrementPC(); //PC + 2
+	_push_onto_stack(reg::PCH);
+	_push_onto_stack(reg::PCL);
+	reg::PCH = _calculate_address(addressingMode, operands);
 }
 
 void ProcLDA(AddressingMode addressingMode, uint8_t operands[])
@@ -418,8 +421,9 @@ void ProcRTI(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcRTS(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "RTS ";
-	PrintOperands(addressingMode, operands);
+	reg::PCL = _pull_from_stack();
+	reg::PCH = _pull_from_stack();
+	IncrementPC();
 }
 
 void ProcSBC(AddressingMode addressingMode, uint8_t operands[])
