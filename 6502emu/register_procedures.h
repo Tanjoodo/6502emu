@@ -17,3 +17,6 @@ bool GetFlagD();
 bool GetFlagB();
 bool GetFlagV();
 bool GetFlagN();
+
+void IncrementPC();
+void DecrementPC();
