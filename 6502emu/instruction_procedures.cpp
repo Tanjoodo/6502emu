@@ -127,6 +127,17 @@ uint8_t& _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
 	}
 }
 
+void _push_onto_stack(uint8_t operand)
+{
+	mem[reg::SP + 0x100] = operand;
+	reg::SP--;
+}
+
+uint8_t _pull_from_stack()
+{
+	return mem[++reg::SP];
+}
+
 void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint8_t& operand = _fetch_operand(addressingMode, operands);

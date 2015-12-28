@@ -7,5 +7,5 @@ namespace reg
 		Status,
 		PCH,
 		PCL,
-		SP;
+		SP = 0xFF;
 }
