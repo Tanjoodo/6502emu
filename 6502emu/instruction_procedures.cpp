@@ -377,8 +377,7 @@ void ProcORA(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcPHA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PHA ";
-	PrintOperands(addressingMode, operands);
+	_push_onto_stack(reg::Accumulator);
 }
 
 void ProcPHP(AddressingMode addressingMode, uint8_t operands[])
@@ -389,8 +388,10 @@ void ProcPHP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcPLA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PLA ";
-	PrintOperands(addressingMode, operands);
+	reg::Accumulator = _pull_from_stack();
+
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcPLP(AddressingMode addressingMode, uint8_t operands[])
