@@ -382,8 +382,7 @@ void ProcPHA(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcPHP(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PHP ";
-	PrintOperands(addressingMode, operands);
+	_push_onto_stack(reg::Status);
 }
 
 void ProcPLA(AddressingMode addressingMode, uint8_t operands[])
@@ -396,8 +395,7 @@ void ProcPLA(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcPLP(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PLP ";
-	PrintOperands(addressingMode, operands);
+	reg::Status = _pull_from_stack();
 }
 
 void ProcROL(AddressingMode addressingMode, uint8_t operands[])
