@@ -87,18 +87,18 @@ bool GetFlagN()
 	return _getBit(7);
 }
 
-void IncrementPC()
+void IncrementPC(uint8_t val)
 {
 	uint16_t pc = (uint16_t)reg::PCH << 8 | reg::PCL;
-	pc++;
+	pc += val;
 	reg::PCH = (pc >> 8) & 0x00FF;
 	reg::PCL = pc & 0x00FF;
 }
 
-void DecrementPC()
+void DecrementPC(uint8_t val)
 {
 	uint16_t pc = (uint16_t)reg::PCH << 8 | reg::PCL;
-	pc--;
+	pc -= val;
 	reg::PCH = (pc >> 8) & 0x00FF;
 	reg::PCL = pc & 0x00FF;
 }

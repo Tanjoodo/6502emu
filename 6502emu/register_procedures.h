@@ -18,5 +18,5 @@ bool GetFlagB();
 bool GetFlagV();
 bool GetFlagN();
 
-void IncrementPC();
-void DecrementPC();
+void IncrementPC(uint8_t);
+void DecrementPC(uint8_t);

@@ -339,11 +339,11 @@ void ProcJMP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
 {
-	IncrementPC();
-	IncrementPC(); //PC + 2
+	IncrementPC(2);
 	_push_onto_stack(reg::PCH);
 	_push_onto_stack(reg::PCL);
-	reg::PCH = _calculate_address(addressingMode, operands);
+	reg::PCH = _get_high(_calculate_address(addressingMode, operands));
+	reg::PCL = _get_low(_calculate_address(addressingMode, operands));
 }
 
 void ProcLDA(AddressingMode addressingMode, uint8_t operands[])
@@ -434,7 +434,7 @@ void ProcRTS(AddressingMode addressingMode, uint8_t operands[])
 {
 	reg::PCL = _pull_from_stack();
 	reg::PCH = _pull_from_stack();
-	IncrementPC();
+	IncrementPC(1);
 }
 
 void ProcSBC(AddressingMode addressingMode, uint8_t operands[])
