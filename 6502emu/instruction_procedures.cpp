@@ -180,8 +180,9 @@ void ProcASL(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBCC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BCC ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (!GetFlagC())
+		IncrementPC(2 + operand);
 }
 
 void ProcBCS(AddressingMode addressingMode, uint8_t operands[])
@@ -193,8 +194,9 @@ void ProcBCS(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBEQ(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BEQ ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (GetFlagZ())
+		IncrementPC(2 + operand);
 }
 
 void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
@@ -205,20 +207,23 @@ void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBMI(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BMI ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (GetFlagN())
+		IncrementPC(2 + operand);
 }
 
 void ProcBNE(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BNE ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (!GetFlagZ())
+		IncrementPC(2 + operand);
 }
 
 void ProcBPL(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BPL ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (!GetFlagN())
+		IncrementPC(2 + operand);
 }
 
 void ProcBRK(AddressingMode addressingMode, uint8_t operands[])
@@ -229,14 +234,16 @@ void ProcBRK(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBVC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BVC ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (!GetFlagV())
+		IncrementPC(2 + operand);
 }
 
 void ProcBVS(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BVS ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (GetFlagV())
+		IncrementPC(2 + operand);
 }
 
 void ProcCLC(AddressingMode addressingMode, uint8_t operands[])
