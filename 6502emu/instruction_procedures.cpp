@@ -133,6 +133,16 @@ void _push_onto_stack(uint8_t operand)
 	reg::SP--;
 }
 
+uint8_t _get_low(uint16_t address)
+{
+	return  address & 0x00FF;
+}
+
+uint8_t _get_high(uint16_t address)
+{
+	 return (address >> 8) & 0x00FF;
+}
+
 uint8_t _pull_from_stack()
 {
 	return mem[++reg::SP];
@@ -322,8 +332,9 @@ void ProcINY(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcJMP(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "JMP ";
-	PrintOperands(addressingMode, operands);
+	uint16_t address = _calculate_address(addressingMode, operands);
+	reg::PCH = _get_high(address);
+	reg::PCL = _get_low(address);
 }
 
 void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
