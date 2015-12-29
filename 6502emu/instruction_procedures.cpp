@@ -127,6 +127,17 @@ uint8_t& _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
 	}
 }
 
+void _push_onto_stack(uint8_t operand)
+{
+	mem[reg::SP + 0x100] = operand;
+	reg::SP--;
+}
+
+uint8_t _pull_from_stack()
+{
+	return mem[++reg::SP];
+}
+
 void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint8_t& operand = _fetch_operand(addressingMode, operands);
@@ -317,8 +328,11 @@ void ProcJMP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "JSR ";
-	PrintOperands(addressingMode, operands);
+	IncrementPC();
+	IncrementPC(); //PC + 2
+	_push_onto_stack(reg::PCH);
+	_push_onto_stack(reg::PCL);
+	reg::PCH = _calculate_address(addressingMode, operands);
 }
 
 void ProcLDA(AddressingMode addressingMode, uint8_t operands[])
@@ -366,26 +380,25 @@ void ProcORA(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcPHA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PHA ";
-	PrintOperands(addressingMode, operands);
+	_push_onto_stack(reg::Accumulator);
 }
 
 void ProcPHP(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PHP ";
-	PrintOperands(addressingMode, operands);
+	_push_onto_stack(reg::Status);
 }
 
 void ProcPLA(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PLA ";
-	PrintOperands(addressingMode, operands);
+	reg::Accumulator = _pull_from_stack();
+
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcPLP(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "PLP ";
-	PrintOperands(addressingMode, operands);
+	reg::Status = _pull_from_stack();
 }
 
 void ProcROL(AddressingMode addressingMode, uint8_t operands[])
@@ -408,8 +421,9 @@ void ProcRTI(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcRTS(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "RTS ";
-	PrintOperands(addressingMode, operands);
+	reg::PCL = _pull_from_stack();
+	reg::PCH = _pull_from_stack();
+	IncrementPC();
 }
 
 void ProcSBC(AddressingMode addressingMode, uint8_t operands[])
@@ -490,8 +504,7 @@ void ProcTXS(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcTYA(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::Accumulator = reg::Y & operand;
+	reg::Accumulator = reg::Y;
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 

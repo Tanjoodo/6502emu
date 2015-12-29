@@ -86,3 +86,19 @@ bool GetFlagN()
 {
 	return _getBit(7);
 }
+
+void IncrementPC()
+{
+	uint16_t pc = (uint16_t)reg::PCH << 8 | reg::PCL;
+	pc++;
+	reg::PCH = (pc >> 8) & 0x00FF;
+	reg::PCL = pc & 0x00FF;
+}
+
+void DecrementPC()
+{
+	uint16_t pc = (uint16_t)reg::PCH << 8 | reg::PCL;
+	pc--;
+	reg::PCH = (pc >> 8) & 0x00FF;
+	reg::PCL = pc & 0x00FF;
+}
