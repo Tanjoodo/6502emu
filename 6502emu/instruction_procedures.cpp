@@ -133,16 +133,6 @@ void _push_onto_stack(uint8_t operand)
 	reg::SP--;
 }
 
-uint8_t _get_low(uint16_t address)
-{
-	return  address & 0x00FF;
-}
-
-uint8_t _get_high(uint16_t address)
-{
-	 return (address >> 8) & 0x00FF;
-}
-
 uint8_t _pull_from_stack()
 {
 	return mem[++reg::SP];
@@ -196,8 +186,9 @@ void ProcBCC(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBCS(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BCS ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	if (GetFlagC())
+		IncrementPC(2 + operand);
 }
 
 void ProcBEQ(AddressingMode addressingMode, uint8_t operands[])
@@ -333,8 +324,7 @@ void ProcINY(AddressingMode addressingMode, uint8_t operands[])
 void ProcJMP(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint16_t address = _calculate_address(addressingMode, operands);
-	reg::PCH = _get_high(address);
-	reg::PCL = _get_low(address);
+	SetPC(address);
 }
 
 void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
@@ -342,8 +332,7 @@ void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
 	IncrementPC(2);
 	_push_onto_stack(reg::PCH);
 	_push_onto_stack(reg::PCL);
-	reg::PCH = _get_high(_calculate_address(addressingMode, operands));
-	reg::PCL = _get_low(_calculate_address(addressingMode, operands));
+	SetPC(_calculate_address(addressingMode, operands));
 }
 
 void ProcLDA(AddressingMode addressingMode, uint8_t operands[])

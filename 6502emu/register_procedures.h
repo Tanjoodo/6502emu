@@ -20,3 +20,4 @@ bool GetFlagN();
 
 void IncrementPC(uint8_t);
 void DecrementPC(uint8_t);
+void SetPC(uint16_t);

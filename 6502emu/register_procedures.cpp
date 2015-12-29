@@ -17,6 +17,16 @@ bool _getBit(int bit_num)
 	return temp_s & 1;
 }
 
+uint8_t _get_low(uint16_t address)
+{
+	return  address & 0x00FF;
+}
+
+uint8_t _get_high(uint16_t address)
+{
+	 return (address >> 8) & 0x00FF;
+}
+
 void SetFlagC(bool state)
 {
 	_setBit(state, 0);
@@ -101,4 +111,10 @@ void DecrementPC(uint8_t val)
 	pc -= val;
 	reg::PCH = (pc >> 8) & 0x00FF;
 	reg::PCL = pc & 0x00FF;
+}
+
+void SetPC(uint16_t val)
+{
+	reg::PCH = _get_high(val);
+	reg::PCL = _get_low(val);
 }
