@@ -279,7 +279,7 @@ void ProcCMP(AddressingMode addressingMode, uint8_t operands[])
 	SetFlagC(reg::Accumulator >= operand);
 }
 
-void ProCPX(AddressingMode addressingMode, uint8_t operands[])
+void ProcCPX(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint8_t &operand = _fetch_operand(addressingMode, operands);
 	SetFlagZ(operand == reg::X);
@@ -442,15 +442,15 @@ void ProcROL(AddressingMode addressingMode, uint8_t operands[])
 		reg::Accumulator <<= 1;
 		reg::Accumulator |= (GetFlagC()) ? 1 : 0;
 		SetFlagZ(reg::Accumulator == 0);
-		SetFlagN((reg::Accumulator & (1 << 7) != 0));
+		SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 	}
 	else
 	{
 		uint8_t& operand = _fetch_operand(addressingMode, operands);
 		operand <<= 1;
 		operand |= (GetFlagC()) ? 1 : 0;
-		SetFlagZ(operand);
-		SetFlagN((operand & (1 << 7) != 0));
+		SetFlagZ(operand == 0);
+		SetFlagN((operand & (1 << 7)) != 0);
 	}
 }
 
@@ -467,7 +467,7 @@ void ProcROR(AddressingMode addressingMode, uint8_t operands[])
 		uint8_t& operand = _fetch_operand(addressingMode, operands);
 		operand >>= 1;
 		operand |= (GetFlagC()) ? (1 << 7) : 0;
-		SetFlagZ(operand);
+		SetFlagZ(operand == 0);
 	}
 
 	SetFlagN(GetFlagC());
