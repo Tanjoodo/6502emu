@@ -201,8 +201,13 @@ void ProcBEQ(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "BIT ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t res = operand & reg::Accumulator;
+
+	SetFlagN((res & (1 << 7)) != 0);
+	SetFlagV((res & (1 << 6)) != 0);
+	SetFlagZ(res == 0);
+	
 }
 
 void ProcBMI(AddressingMode addressingMode, uint8_t operands[])
@@ -274,15 +279,17 @@ void ProcCMP(AddressingMode addressingMode, uint8_t operands[])
 	SetFlagC(reg::Accumulator >= operand);
 }
 
-void ProcCPX(AddressingMode addressingMode, uint8_t operands[])
+void ProCPX(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CPX ";
-	PrintOperands(addressingMode, operands);
+	uint8_t &operand = _fetch_operand(addressingMode, operands);
+	SetFlagZ(operand == reg::X);
+	SetFlagC(operand < reg::X);
+	SetFlagN(operand > reg::X);
 }
 
 void ProcCPY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CPY ";
+	cout << "CPY";
 	PrintOperands(addressingMode, operands);
 }
 
@@ -306,26 +313,33 @@ void ProcDEY(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcEOR(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "EOR ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::Accumulator ^ operand;
+
+	SetFlagZ(reg::Accumulator == 0);
+	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcINC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "INC ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	operand++;
+	SetFlagZ(operand == 0);
+	SetFlagN((operand & (1 << 7)) != 0);
 }
 
 void ProcINX(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "INX ";
-	PrintOperands(addressingMode, operands);
+	reg::X++;
+	SetFlagZ(reg::X == 0);
+	SetFlagN((reg::X & (1 << 7)) != 0);;
 }
 
 void ProcINY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "INY ";
-	PrintOperands(addressingMode, operands);
+	reg::Y++;
+	SetFlagZ(reg::Y == 0);
+	SetFlagN((reg::Y & (1 << 7)) != 0);;
 }
 
 void ProcJMP(AddressingMode addressingMode, uint8_t operands[])
@@ -368,8 +382,21 @@ void ProcLDY(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcLSR(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "LSR ";
-	PrintOperands(addressingMode, operands);
+	if (addressingMode == Accumulator)
+	{
+		SetFlagC((Accumulator & 1) != 0);
+		reg::Accumulator >>= 1;
+		SetFlagZ(reg::Accumulator == 0);
+	}
+	else
+	{
+		uint8_t& operand = _fetch_operand(addressingMode, operands);
+		SetFlagC((operand & 1) != 0);
+		operand >>= 1;
+		SetFlagZ(operand == 0);
+	}
+
+	SetFlagN(false);
 }
 
 void ProcNOP(AddressingMode addressingMode, uint8_t operands[])
@@ -410,14 +437,40 @@ void ProcPLP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcROL(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "ROL ";
-	PrintOperands(addressingMode, operands);
+	if (addressingMode == Accumulator)
+	{
+		reg::Accumulator <<= 1;
+		reg::Accumulator |= (GetFlagC()) ? 1 : 0;
+		SetFlagZ(reg::Accumulator == 0);
+		SetFlagN((reg::Accumulator & (1 << 7) != 0));
+	}
+	else
+	{
+		uint8_t& operand = _fetch_operand(addressingMode, operands);
+		operand <<= 1;
+		operand |= (GetFlagC()) ? 1 : 0;
+		SetFlagZ(operand);
+		SetFlagN((operand & (1 << 7) != 0));
+	}
 }
 
 void ProcROR(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "ROR ";
-	PrintOperands(addressingMode, operands);
+	if (addressingMode == Accumulator)
+	{
+		reg::Accumulator >>= 1;
+		reg::Accumulator |= (GetFlagC()) ? (1 << 7) : 0;
+		SetFlagZ(reg::Accumulator == 0);
+	}
+	else
+	{
+		uint8_t& operand = _fetch_operand(addressingMode, operands);
+		operand >>= 1;
+		operand |= (GetFlagC()) ? (1 << 7) : 0;
+		SetFlagZ(operand);
+	}
+
+	SetFlagN(GetFlagC());
 }
 
 void ProcRTI(AddressingMode addressingMode, uint8_t operands[])
