@@ -116,14 +116,14 @@ uint16_t _calculate_address(AddressingMode addressingMode, uint8_t operands[])
 }
 
 // Should not be used with addressing modes Accumulator and Implied.
-uint8_t& _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
+uint8_t* _fetch_operand(AddressingMode addressingMode, uint8_t operands[])
 {
 	switch (addressingMode)
 	{
 	case Immediate:
-		return operands[0];
+		return &operands[0];
 	default:
-		return mem[_calculate_address(addressingMode, operands)];
+		return &mem[_calculate_address(addressingMode, operands)];
 	}
 }
 
@@ -140,17 +140,17 @@ uint8_t _pull_from_stack()
 
 void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagD())
 	{
 		bool bit7 = (reg::Accumulator & (1 << 7)) != 0;
 		uint8_t oldAcc = reg::Accumulator;
-		if (reg::Accumulator + operand > 255)
+		if (reg::Accumulator + *operand > 255)
 			SetFlagC(true);
 		else
 			SetFlagC(false);
 
-		reg::Accumulator += operand;
+		reg::Accumulator += *operand;
 
 		SetFlagN((reg::Accumulator & (1 << 7)) != 0); // Put bit 7 in S flag
 		SetFlagZ(!reg::Accumulator);
@@ -160,49 +160,49 @@ void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::Accumulator = reg::Accumulator & operand;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::Accumulator * *operand;
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcASL(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = (addressingMode == Accumulator) ? reg::Accumulator : _fetch_operand(addressingMode, operands);
+	uint8_t* operand = (addressingMode == Accumulator) ? &reg::Accumulator : _fetch_operand(addressingMode, operands);
 
-	SetFlagC((operand & (1 << 7)) != 0);
-	SetFlagN((operand & (1 << 6)) != 0);
+	SetFlagC((*operand & (1 << 7)) != 0);
+	SetFlagN((*operand & (1 << 6)) != 0);
 
-	operand <<= 1;
+	*operand <<= 1;
 
-	SetFlagZ(operand == 0);
+	SetFlagZ(*operand == 0);
 }
 
 void ProcBCC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagC())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcBCS(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagC())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcBEQ(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagZ())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	uint8_t res = operand & reg::Accumulator;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	uint8_t res = *operand & reg::Accumulator;
 
 	SetFlagN((res & (1 << 7)) != 0);
 	SetFlagV((res & (1 << 6)) != 0);
@@ -211,23 +211,23 @@ void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBMI(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagN())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcBNE(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagZ())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcBPL(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagN())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcBRK(AddressingMode addressingMode, uint8_t operands[])
@@ -238,16 +238,16 @@ void ProcBRK(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBVC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagV())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcBVS(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagV())
-		IncrementPC(2 + operand);
+		IncrementPC(2 + *operand);
 }
 
 void ProcCLC(AddressingMode addressingMode, uint8_t operands[])
@@ -272,35 +272,35 @@ void ProcCLV(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcCMP(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t &operand = _fetch_operand(addressingMode, operands);
-	SetFlagZ(operand == reg::Accumulator);
-	SetFlagN(reg::Accumulator < operand);
-	SetFlagC(reg::Accumulator >= operand);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	SetFlagZ(*operand == reg::Accumulator);
+	SetFlagN(reg::Accumulator < *operand);
+	SetFlagC(reg::Accumulator >= *operand);
 }
 
 void ProcCPX(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	SetFlagZ(operand == reg::X);
-	SetFlagC(operand < reg::X);
-	SetFlagN(operand > reg::X);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	SetFlagZ(*operand == reg::X);
+	SetFlagC(*operand < reg::X);
+	SetFlagN(*operand > reg::X);
 }
 
 void ProcCPY(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	uint8_t sub_result = reg::Y + ~(operand) + 1;
-	SetFlagC(reg::Y >= operand);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	uint8_t sub_result = reg::Y + ~(*operand) + 1;
+	SetFlagC(reg::Y >= *operand);
 	SetFlagN((sub_result & (1 << 7)) != 0);
-	SetFlagZ(reg::Y == operand);
+	SetFlagZ(reg::Y == *operand);
 }
 
 void ProcDEC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	operand--;
-	SetFlagN((operand & (1 << 7)) != 0);
-	SetFlagZ(operand == 0);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	*operand--;
+	SetFlagN((*operand & (1 << 7)) != 0);
+	SetFlagZ(*operand == 0);
 }
 
 void ProcDEX(AddressingMode addressingMode, uint8_t operands[])
@@ -319,8 +319,8 @@ void ProcDEY(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcEOR(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::Accumulator = reg::Accumulator ^ operand;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::Accumulator ^ *operand;
 
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
@@ -328,10 +328,10 @@ void ProcEOR(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcINC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	operand++;
-	SetFlagZ(operand == 0);
-	SetFlagN((operand & (1 << 7)) != 0);
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	*operand++;
+	SetFlagZ(*operand == 0);
+	SetFlagN((*operand & (1 << 7)) != 0);
 }
 
 void ProcINX(AddressingMode addressingMode, uint8_t operands[])
@@ -364,24 +364,24 @@ void ProcJSR(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcLDA(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::Accumulator = operand;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = *operand;
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }
 
 void ProcLDX(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::X = operand;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	reg::X = *operand;
 	SetFlagZ(reg::X == 0);
 	SetFlagN((reg::X & (1 << 7)) != 0);
 }
 
 void ProcLDY(AddressingMode addressingMode, uint8_t operands[])
 {
-    uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::Y= operand;
+    uint8_t* operand = _fetch_operand(addressingMode, operands);
+	reg::Y = *operand;
 	SetFlagN((reg::Y & (1 << 7)) != 0);
 	SetFlagZ(reg::Y == 0);
 }
@@ -396,10 +396,10 @@ void ProcLSR(AddressingMode addressingMode, uint8_t operands[])
 	}
 	else
 	{
-		uint8_t& operand = _fetch_operand(addressingMode, operands);
-		SetFlagC((operand & 1) != 0);
-		operand >>= 1;
-		SetFlagZ(operand == 0);
+		uint8_t* operand = _fetch_operand(addressingMode, operands);
+		SetFlagC((*operand & 1) != 0);
+		*operand >>= 1;
+		SetFlagZ(*operand == 0);
 	}
 
 	SetFlagN(false);
@@ -411,8 +411,8 @@ void ProcNOP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcORA(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	reg::Accumulator = reg::Accumulator | operand;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	reg::Accumulator = reg::Accumulator | *operand;
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 
@@ -452,11 +452,11 @@ void ProcROL(AddressingMode addressingMode, uint8_t operands[])
 	}
 	else
 	{
-		uint8_t& operand = _fetch_operand(addressingMode, operands);
-		operand <<= 1;
-		operand |= (GetFlagC()) ? 1 : 0;
-		SetFlagZ(operand == 0);
-		SetFlagN((operand & (1 << 7)) != 0);
+		uint8_t* operand = _fetch_operand(addressingMode, operands);
+		*operand <<= 1;
+		*operand |= (GetFlagC()) ? 1 : 0;
+		SetFlagZ(*operand == 0);
+		SetFlagN((*operand & (1 << 7)) != 0);
 	}
 }
 
@@ -470,10 +470,10 @@ void ProcROR(AddressingMode addressingMode, uint8_t operands[])
 	}
 	else
 	{
-		uint8_t& operand = _fetch_operand(addressingMode, operands);
-		operand >>= 1;
-		operand |= (GetFlagC()) ? (1 << 7) : 0;
-		SetFlagZ(operand == 0);
+		uint8_t* operand = _fetch_operand(addressingMode, operands);
+		*operand >>= 1;
+		*operand |= (GetFlagC()) ? (1 << 7) : 0;
+		SetFlagZ(*operand == 0);
 	}
 
 	SetFlagN(GetFlagC());
@@ -494,8 +494,8 @@ void ProcRTS(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcSBC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t &operand = _fetch_operand(addressingMode, operands);
-	uint8_t twos_comp = ~(operand) + 1;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	uint8_t twos_comp = ~(*operand) + 1;
 	SetFlagV((reg::Accumulator <= 127 && reg::Accumulator + twos_comp > 127) ||
 			 (reg::Accumulator >= 127 && reg::Accumulator + twos_comp < 127));
 
@@ -523,20 +523,20 @@ void ProcSEI(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcSTA(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	operand = reg::Accumulator;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	*operand = reg::Accumulator;
 }
 
 void ProcSTX(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	operand = reg::X;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	*operand = reg::X;
 }
 
 void ProcSTY(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t& operand = _fetch_operand(addressingMode, operands);
-	operand = reg::Y;
+	uint8_t* operand = _fetch_operand(addressingMode, operands);
+	*operand = reg::Y;
 }
 
 void ProcTAX(AddressingMode addressingMode, uint8_t operands[])

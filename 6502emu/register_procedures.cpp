@@ -103,6 +103,7 @@ void IncrementPC(uint8_t val)
 	pc += val;
 	reg::PCH = (pc >> 8) & 0x00FF;
 	reg::PCL = pc & 0x00FF;
+	reg::pc_changed_externally = true;
 }
 
 void DecrementPC(uint8_t val)
@@ -111,10 +112,17 @@ void DecrementPC(uint8_t val)
 	pc -= val;
 	reg::PCH = (pc >> 8) & 0x00FF;
 	reg::PCL = pc & 0x00FF;
+	reg::pc_changed_externally = true;
 }
 
 void SetPC(uint16_t val)
 {
 	reg::PCH = _get_high(val);
 	reg::PCL = _get_low(val);
+	reg::pc_changed_externally = true;
+}
+
+uint16_t GetPC()
+{
+	return (uint16_t)reg::PCH << 8 | reg::PCL;
 }
