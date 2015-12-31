@@ -207,7 +207,6 @@ void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
 	SetFlagN((res & (1 << 7)) != 0);
 	SetFlagV((res & (1 << 6)) != 0);
 	SetFlagZ(res == 0);
-	
 }
 
 void ProcBMI(AddressingMode addressingMode, uint8_t operands[])
@@ -281,7 +280,7 @@ void ProcCMP(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcCPX(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t &operand = _fetch_operand(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
 	SetFlagZ(operand == reg::X);
 	SetFlagC(operand < reg::X);
 	SetFlagN(operand > reg::X);
@@ -289,26 +288,33 @@ void ProcCPX(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcCPY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "CPY";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	uint8_t sub_result = reg::Y + ~(operand) + 1;
+	SetFlagC(reg::Y >= operand);
+	SetFlagN((sub_result & (1 << 7)) != 0);
+	SetFlagZ(reg::Y == operand);
 }
 
 void ProcDEC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "DEC ";
-	PrintOperands(addressingMode, operands);
+	uint8_t& operand = _fetch_operand(addressingMode, operands);
+	operand--;
+	SetFlagN((operand & (1 << 7)) != 0);
+	SetFlagZ(operand == 0);
 }
 
 void ProcDEX(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "DEX ";
-	PrintOperands(addressingMode, operands);
+	reg::X--;
+	SetFlagN((reg::X & (1 << 7)) != 0);
+	SetFlagZ(reg::X == 0);
 }
 
 void ProcDEY(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "DEY ";
-	PrintOperands(addressingMode, operands);
+	reg::Y--;
+	SetFlagN((reg::Y & (1 << 7)) != 0);
+	SetFlagZ(reg::Y == 0);
 }
 
 void ProcEOR(AddressingMode addressingMode, uint8_t operands[])
@@ -488,8 +494,16 @@ void ProcRTS(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcSBC(AddressingMode addressingMode, uint8_t operands[])
 {
-	cout << "SBC ";
-	PrintOperands(addressingMode, operands);
+	uint8_t &operand = _fetch_operand(addressingMode, operands);
+	uint8_t twos_comp = ~(operand) + 1;
+	SetFlagV((reg::Accumulator <= 127 && reg::Accumulator + twos_comp > 127) ||
+			 (reg::Accumulator >= 127 && reg::Accumulator + twos_comp < 127));
+
+	reg::Accumulator = twos_comp + reg::Accumulator;
+
+	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
+	SetFlagC(!(reg::Accumulator & (1 << 7)) != 0);
+
 }
 
 void ProcSEC(AddressingMode addressingMode, uint8_t operands[])
