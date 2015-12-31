@@ -161,7 +161,7 @@ void ProcADC(AddressingMode addressingMode, uint8_t operands[])
 void ProcAND(AddressingMode addressingMode, uint8_t operands[])
 {
 	uint8_t* operand = _fetch_operand(addressingMode, operands);
-	reg::Accumulator = reg::Accumulator * *operand;
+	reg::Accumulator = reg::Accumulator & *operand;
 	SetFlagZ(reg::Accumulator == 0);
 	SetFlagN((reg::Accumulator & (1 << 7)) != 0);
 }

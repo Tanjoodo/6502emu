@@ -69,13 +69,13 @@ int main(int argc, char **argv)
 		else
 			reg::pc_changed_externally = false;
 	}
-	cin.ignore();
-
 	do
 	{
 		uint16_t location;
+		cout << "Query memory location: ";
 		cin >> location;
-		cout << hex << (int)mem[location];
+		cin.ignore();
+		cout << "0x" << hex << (int)mem[location] << endl;
 	}while (true);
 	return 0;
 }
