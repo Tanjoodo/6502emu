@@ -87,7 +87,7 @@ uint16_t _8_to_16(uint8_t high, uint8_t low)
 {
 	return (uint16_t)high << 8 | low;
 }
-uint8_t aux_res;
+
 uint16_t _calculate_address(AddressingMode addressingMode, uint8_t operands[])
 {
 	switch (addressingMode)
