@@ -61,9 +61,9 @@ int main(int argc, char **argv)
 	while (true)
 	{
 		Instruction instruction = DecodeInstruction(mem[GetPC()]);
-		int instruction_length = Decode(GetPC(), mem);
 		if (instruction == BRK)
 			break;
+		int instruction_length = Decode(GetPC(), mem);
 		if (!reg::pc_changed_externally)
 			incPC(instruction_length);
 		else
@@ -73,7 +73,7 @@ int main(int argc, char **argv)
 	{
 		uint16_t location;
 		cout << "Query memory location: ";
-		cin >> location;
+		cin >> hex >> location;
 		cin.ignore();
 		cout << "0x" << hex << (int)mem[location] << endl;
 	}while (true);
