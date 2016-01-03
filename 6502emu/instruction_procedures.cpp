@@ -87,7 +87,7 @@ uint16_t _8_to_16(uint8_t high, uint8_t low)
 {
 	return (uint16_t)high << 8 | low;
 }
-
+uint8_t aux_res;
 uint16_t _calculate_address(AddressingMode addressingMode, uint8_t operands[])
 {
 	switch (addressingMode)
@@ -180,23 +180,20 @@ void ProcASL(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBCC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagC())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcBCS(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagC())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcBEQ(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagZ())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
@@ -211,23 +208,20 @@ void ProcBIT(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBMI(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagN())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcBNE(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagZ())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcBPL(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagN())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcBRK(AddressingMode addressingMode, uint8_t operands[])
@@ -238,16 +232,14 @@ void ProcBRK(AddressingMode addressingMode, uint8_t operands[])
 
 void ProcBVC(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (!GetFlagV())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcBVS(AddressingMode addressingMode, uint8_t operands[])
 {
-	uint8_t* operand = _fetch_operand(addressingMode, operands);
 	if (GetFlagV())
-		IncrementPC(2 + *operand);
+		SetPC(_calculate_address(addressingMode, operands) + 2);
 }
 
 void ProcCLC(AddressingMode addressingMode, uint8_t operands[])

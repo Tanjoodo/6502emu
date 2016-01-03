@@ -7,6 +7,17 @@
 #include <fstream>
 #include <cstdint>
 
+namespace reg
+{
+	bool pc_changed_externally = false;
+	uint8_t Accumulator,
+		X,
+		Y,
+		Status,
+		PCH,
+		PCL,
+		SP = 0xFF;
+}
 
 uint8_t mem[0x10000] = {};
 using namespace std;
@@ -55,15 +66,26 @@ int main(int argc, char **argv)
 			cout << "File input failed" << endl;
 		}
 	}
-
+	int t;
+	cout << "Enter number of locations you wish to change: ";
+	cin >> t;
+	while (t--)
+	{
+		uint16_t location;
+		int val;
+		cout << "Enter address to change at followed by the value: ";
+		cin >> hex >> location;
+		cin >> hex >> val;
+		mem[location] = val;
+	}
 	SetPC(0x400);
 	reg::pc_changed_externally = false;
 	while (true)
 	{
 		Instruction instruction = DecodeInstruction(mem[GetPC()]);
-		int instruction_length = Decode(GetPC(), mem);
 		if (instruction == BRK)
 			break;
+		int instruction_length = Decode(GetPC(), mem);
 		if (!reg::pc_changed_externally)
 			incPC(instruction_length);
 		else
@@ -73,7 +95,7 @@ int main(int argc, char **argv)
 	{
 		uint16_t location;
 		cout << "Query memory location: ";
-		cin >> location;
+		cin >> hex >> location;
 		cin.ignore();
 		cout << "0x" << hex << (int)mem[location] << endl;
 	}while (true);
